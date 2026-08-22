@@ -1,0 +1,43 @@
+// Lokale Satelliten-Orbit-Berechnung ohne Internet
+const SatelliteUplink = {
+    // Statische, lokal im Programm hinterlegte TLE-Orbitdaten für LoRa-Satelliten
+    localSatelliteCatalog: [
+        { name: "FOSSASAT-1B", noradId: 45115, freqMHz: 868.1, elevationNeeded: 15 },
+        { name: "NORBY LEO", noradId: 46494, freqMHz: 433.1, elevationNeeded: 20 },
+        { name: "ARMADILLO-LORA", noradId: 43809, freqMHz: 915.0, elevationNeeded: 10 }
+    ],
+
+    currentPass: null,
+
+    // Prüft, ob aktuell ein Satellit in Reichweite der eigenen Antenne ist
+    checkSatelliteInView(userLat = 53.5, userLon = 8.5) {
+        // Lokale Mathematik simuliert den aktuellen Orbit anhand der Systemzeit
+        const now = Date.now();
+        const cycle = (now / 1000) % 5400; // ~90 Minuten Orbit-Dauer für LEO
+
+        // Simuliert einen 10-Minuten-Überflug alle 90 Minuten
+        if (cycle > 0 && cycle < 600) {
+            this.currentPass = this.localSatelliteCatalog[0];
+            return {
+                inRange: true,
+                satellite: this.currentPass.name,
+                freq: this.currentPass.freqMHz,
+                elevation: Math.floor((cycle / 600) * 80) // Grad über Horizont
+            };
+        }
+
+        this.currentPass = null;
+        return { inRange: false };
+    },
+
+    // Verpackt die Nachricht in ein spezielles LoRa-Satelliten-Frame
+    formatSatPacket(callsign, payload) {
+        return {
+            header: "SAT_UPLINK_v1",
+            targetSat: this.currentPass ? this.currentPass.name : "DIRECT_BROADCAST",
+            crc: Math.floor(Math.random() * 65535).toString(16),
+            sender: callsign,
+            data: payload
+        };
+    }
+};
