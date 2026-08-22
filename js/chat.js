@@ -1,31 +1,35 @@
 const chatForm = document.getElementById('chatForm');
-const messageInput = document.getElementById('messageInput');
-const chatMessages = document.getElementById('chatMessages');
 
-// Funktion zum Absenden einer Nachricht
 chatForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const text = messageInput.value.trim();
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
     if (text === '') return;
 
-    // Neue Nachricht im UI erstellen
-    const msgDiv = document.createElement('div');
-    msgDiv.className = 'message outgoing';
-    msgDiv.innerHTML = `
-        <span class="sender">You (Germany):</span>
-        ${escapeHTML(text)}
-    `;
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-    // Zum Verlauf hinzufügen
-    chatMessages.appendChild(msgDiv);
+    // Nachricht im Datenmodell des aktuellen Raums speichern
+    const newMsg = {
+        sender: "You (Germany)",
+        text: text,
+        type: "outgoing",
+        time: timeStr
+    };
 
-    // Eingabe leeren und nach unten scrollen
-    messageInput.value = '';
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    if (!roomsData[currentActiveRoom]) {
+        roomsData[currentActiveRoom] = [];
+    }
+    
+    roomsData[currentActiveRoom].push(newMsg);
+
+    // Chat-Verlauf aktualisieren
+    loadMessagesForRoom(currentActiveRoom);
+
+    input.value = '';
 });
 
-// Sicherheit: HTML-Code in Nachrichten neutralisieren
 function escapeHTML(str) {
     return str.replace(/[&<>'"]/g, 
         tag => ({
