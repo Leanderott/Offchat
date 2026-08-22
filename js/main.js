@@ -1,16 +1,65 @@
-// Elemente aus dem HTML laden
-const menuToggle = document.getElementById('menuToggle');
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
+document.addEventListener('DOMContentLoaded', () => {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    const overlay = document.getElementById('overlay');
 
-// Funktion zum Öffnen/Schließen des Menüs
-function toggleMenu() {
-    sidebar.classList.toggle('open');
-    overlay.classList.toggle('active');
-}
+    const authModal = document.getElementById('authModal');
+    const btnAuth = document.getElementById('btnAuth');
+    const btnCloseModal = document.getElementById('btnCloseModal');
+    const btnCreateAccount = document.getElementById('btnCreateAccount');
+    
+    const accountName = document.getElementById('accountName');
+    const accountKey = document.getElementById('accountKey');
 
-// Event Listener für den Klick auf den Drei-Striche-Button
-menuToggle.addEventListener('click', toggleMenu);
+    function toggleMenu() {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+    }
 
-// Menü schließen, wenn man irgendwo auf den abgedunkelten Hintergrund klickt
-overlay.addEventListener('click', toggleMenu);
+    window.toggleMenu = toggleMenu;
+
+    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+    if (overlay) overlay.addEventListener('click', toggleMenu);
+
+    if (btnAuth) {
+        btnAuth.addEventListener('click', () => {
+            authModal.classList.add('active');
+        });
+    }
+
+    if (btnCloseModal) {
+        btnCloseModal.addEventListener('click', () => {
+            authModal.classList.remove('active');
+        });
+    }
+
+    if (btnCreateAccount) {
+        btnCreateAccount.addEventListener('click', async () => {
+            const username = document.getElementById('usernameInput').value.trim();
+            const pin = document.getElementById('pinInput').value.trim();
+
+            if (!username || !pin) {
+                alert("Bitte Nickname und PIN eingeben!");
+                return;
+            }
+
+            const identity = await OffCrypto.generateIdentity();
+            const vault = OffCrypto.saveVaultLocal(username, identity.pubKeyHex, pin);
+
+            updateAccountUI(vault);
+            authModal.classList.remove('active');
+        });
+    }
+
+    function updateAccountUI(vault) {
+        if (vault) {
+            accountName.textContent = vault.callsign;
+            accountKey.textContent = `KEY: ${vault.pubKey}`;
+        }
+    }
+
+    const savedVault = OffCrypto.getVaultLocal();
+    if (savedVault) {
+        updateAccountUI(savedVault);
+    }
+});
