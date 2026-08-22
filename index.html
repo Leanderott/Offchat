@@ -3,70 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OFFCHAT // TERMINAL</title>
+    <title>OFFCHAT // RF-CORE TERMINAL</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/chat.css">
 </head>
 <body>
 
-    <!-- Top Navigation Header -->
+    <!-- Header & Status Bar -->
     <header class="top-header">
         <button class="menu-btn" id="menuToggle" aria-label="Menü öffnen">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
         </button>
-        <div class="brand-title">OFFCHAT <span class="status-dot"></span></div>
+        <div class="brand-title">OFFCHAT <span id="hardwareDot" class="status-dot offline"></span></div>
+        
+        <div class="mode-selector">
+            <label for="modeSelect">MODE:</label>
+            <select id="modeSelect">
+                <option value="HARDWARE">DIRECT RF (WebSerial)</option>
+                <option value="SIMULATION">SIMULATION MODE</option>
+            </select>
+        </div>
     </header>
 
-    <!-- Overlay hinter dem Slider -->
     <div class="overlay" id="overlay"></div>
 
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span class="sidebar-title">NETWORK CHATS</span>
+            <span class="sidebar-title">IDENTITY & NODES</span>
+            <div id="accountInfo" class="account-card">
+                <span id="accountName">NOT LOGGED IN</span>
+                <span id="accountKey" class="key-badge">NO_KEY</span>
+            </div>
         </div>
 
         <div class="menu-category">
-            <span class="category-label">GLOBAL & CONTINENTS</span>
-            <ul class="nav-list" id="roomList">
-                <!-- Dynamisch generierte Räume -->
+            <span class="category-label">ACTIONS</span>
+            <button id="btnAuth" class="side-btn">CREATE / LOAD LOCAL ACCOUNT</button>
+            <button id="btnConnectHW" class="side-btn highlight">CONNECT LORA MODULE (USB)</button>
+        </div>
+
+        <div class="menu-category" style="margin-top: 20px;">
+            <span class="category-label">NETWORK CHANNELS</span>
+            <ul class="nav-list" id="roomList"></ul>
+        </div>
+
+        <div class="menu-category" style="margin-top: 20px;">
+            <span class="category-label">DOCUMENTATION</span>
+            <ul class="nav-list">
+                <li class="room-item" id="navExplanations"><span class="glow-text">Explanations</span></li>
+                <li class="room-item" id="navTutorials"><span class="glow-text">Tutorials & Setup</span></li>
             </ul>
         </div>
     </nav>
 
-    <!-- App Chat Interface -->
+    <!-- App Layout -->
     <main class="app-layout">
         <div class="chat-wrapper">
             
+            <!-- Live Signal Path Visualizer -->
+            <div class="signal-visualizer">
+                <div class="node-box" id="nodeBrowser">BROWSER / APP</div>
+                <div class="signal-line" id="lineSerial"><span>USB / Serial</span></div>
+                <div class="node-box" id="nodeHeltec">LORA BOARD</div>
+                <div class="signal-line" id="lineRF"><span>868 MHz CSS</span></div>
+                <div class="node-box" id="nodeSat">LEO SATELLITE</div>
+                <div class="signal-line" id="linePeer"><span>Relay</span></div>
+                <div class="node-box" id="nodePeerBox">REMOTE PEER</div>
+            </div>
+
             <!-- Chat Header -->
             <div class="chat-header">
                 <div class="chat-info">
                     <h2 id="currentRoomTitle" class="glow-text"># General</h2>
-                    <p class="chat-sub">Encrypted Peer-to-Peer Relay Link</p>
+                    <p class="chat-sub" id="modeStatusText">Status: Awaiting Hardware Connection...</p>
                 </div>
-                <span class="room-status">LORA LINK: ONLINE [868/915 MHz]</span>
+                <div id="rfMetrics" class="rf-metrics">RSSI: --dBm | SNR: --dB</div>
             </div>
 
-            <!-- Chat Messages Container -->
-            <div class="chat-messages" id="chatMessages">
-                <!-- Nachrichten werden per JavaScript dynamisch geladen -->
+            <!-- Chat History / Main Viewport -->
+            <div class="main-viewport" id="mainViewport">
+                <div class="chat-messages" id="chatMessages"></div>
             </div>
 
-            <!-- Bottom Input Bar -->
+            <!-- Transmission Form -->
             <form class="chat-input-area" id="chatForm">
-                <input type="text" id="messageInput" placeholder="Write an encrypted message to #General..." autocomplete="off" required>
-                <button type="submit" class="send-btn">
-                    <span>SEND</span>
-                </button>
+                <input type="text" id="messageInput" placeholder="Enter packet data..." autocomplete="off" required>
+                <button type="submit" class="send-btn" id="sendBtn">TX PACKET</button>
             </form>
 
         </div>
     </main>
 
-    <script src="js/main.js"></script>
+    <!-- Account Auth Modal (Fully Offline & Local) -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <h3>LOCAL ON-DEVICE VAULT</h3>
+            <p style="font-size: 0.75rem; color: #88aa88; margin-bottom: 10px;">Generate a local cryptographic identity. Stored encrypted on your device storage.</p>
+            <input type="text" id="usernameInput" placeholder="Callsign (e.g., Alpha_Node)" maxlength="16">
+            <input type="password" id="pinInput" placeholder="Vault Protection PIN">
+            <div class="modal-actions">
+                <button id="btnCreateAccount" class="modal-btn">GENERATE VAULT</button>
+                <button id="btnCloseModal" class="modal-btn cancel">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app-detector.js"></script>
+    <script src="js/crypto.js"></script>
+    <script src="js/satellite-tracker.js"></script>
+    <script src="js/hardware.js"></script>
     <script src="js/rooms.js"></script>
+    <script src="js/docs.js"></script>
     <script src="js/chat.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
