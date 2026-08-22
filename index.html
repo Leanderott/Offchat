@@ -3,61 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT // LEO-MESH</title>
+    <title>OFFCHAT // TERMINAL</title>
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/chat.css">
 </head>
 <body>
 
-    <!-- Header mit Burger-Button -->
+    <!-- Top Navigation Header -->
     <header class="top-header">
         <button class="menu-btn" id="menuToggle" aria-label="Menü öffnen">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
         </button>
-        <div class="brand-title">LEO // MESH</div>
+        <div class="brand-title">OFFCHAT <span class="status-dot"></span></div>
     </header>
 
-    <!-- Overlay zum Abdunkeln des Hintergrunds -->
+    <!-- Overlay hinter dem Slider -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Sidebar Menü (Slider von links) -->
+    <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span class="sidebar-title">SYSTEM MENU</span>
+            <span class="sidebar-title">NETWORK CHATS</span>
         </div>
-        <ul class="nav-list">
-            <li class="nav-item">
-                <a href="#personal-chats" class="nav-link">
-                    <span class="link-text glow-text">Personal Chats</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#chat-rooms" class="nav-link">
-                    <span class="link-text glow-text">Chat Rooms</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#explanations" class="nav-link">
-                    <span class="link-text glow-text">Explanations</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#tutorials" class="nav-link">
-                    <span class="link-text glow-text">Tutorials & Setup</span>
-                </a>
-            </li>
-        </ul>
+
+        <div class="menu-category">
+            <span class="category-label">GLOBAL & CONTINENTS</span>
+            <ul class="nav-list" id="roomList">
+                <!-- Dynamisch generierte Räume -->
+            </ul>
+        </div>
     </nav>
 
-    <!-- Hauptinhalt der Seite -->
-    <main class="main-content">
-        <section class="hero">
-            <h1>PROJECT // LEO-MESH</h1>
-            <p>Decentralized, Off-Grid 10,000 km Satellite Communication Link</p>
-        </section>
+    <!-- App Chat Interface -->
+    <main class="app-layout">
+        <div class="chat-wrapper">
+            
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-info">
+                    <h2 id="currentRoomTitle" class="glow-text"># General</h2>
+                    <p class="chat-sub">Encrypted Peer-to-Peer Relay Link</p>
+                </div>
+                <span class="room-status">LORA LINK: ONLINE [868/915 MHz]</span>
+            </div>
+
+            <!-- Chat Messages Container -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Nachrichten werden per JavaScript dynamisch geladen -->
+            </div>
+
+            <!-- Bottom Input Bar -->
+            <form class="chat-input-area" id="chatForm">
+                <input type="text" id="messageInput" placeholder="Write an encrypted message to #General..." autocomplete="off" required>
+                <button type="submit" class="send-btn">
+                    <span>SEND</span>
+                </button>
+            </form>
+
+        </div>
     </main>
 
     <script src="js/main.js"></script>
+    <script src="js/rooms.js"></script>
+    <script src="js/chat.js"></script>
 </body>
 </html>
